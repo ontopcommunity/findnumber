@@ -244,7 +244,6 @@
             let seconds = 0;
             let timerInterval = null;
             
-            // Initialize the game
             function initGame() {
                 grid.innerHTML = '';
                 numbers = [];
@@ -253,33 +252,29 @@
                 clickCount = 0;
                 seconds = 0;
                 
-                // Clear existing timer
                 if (timerInterval) {
                     clearInterval(timerInterval);
                 }
                 
-                // Start timer
                 timerInterval = setInterval(() => {
                     seconds++;
                     timerDisplay.textContent = `${seconds}s`;
                 }, 1000);
                 
-                // Create numbers array 1-100
                 for (let i = 1; i <= 100; i++) {
                     numbers.push(i);
                 }
                 
-                // Shuffle numbers
+                
                 shuffleArray(numbers);
                 
-                // Update displays
+            
                 targetNumberDisplay.textContent = targetNumber;
                 foundCountDisplay.textContent = foundCount;
                 clickCountDisplay.textContent = clickCount;
                 timerDisplay.textContent = `${seconds}s`;
                 messageDisplay.textContent = '';
                 
-                // Create grid cells
                 numbers.forEach((number, index) => {
                     const cell = document.createElement('div');
                     cell.className = 'grid-cell';
@@ -291,16 +286,14 @@
                     grid.appendChild(cell);
                 });
             }
-            
-            // Fisher-Yates shuffle algorithm
+
             function shuffleArray(array) {
                 for (let i = array.length - 1; i > 0; i--) {
                     const j = Math.floor(Math.random() * (i + 1));
                     [array[i], array[j]] = [array[j], array[i]];
                 }
             }
-            
-            // Handle cell click
+
             function handleCellClick(cell) {
                 clickCount++;
                 clickCountDisplay.textContent = clickCount;
@@ -313,8 +306,7 @@
                     
                     messageDisplay.textContent = `Tìm được số ${targetNumber}! Các số khác đã được hoán đổi.`;
                     messageDisplay.style.color = '#4cc9f0';
-                    
-                    // Move to next target
+
                     targetNumber++;
                     if (targetNumber > 100) {
                         targetNumber = 1;
@@ -322,19 +314,16 @@
                         clearInterval(timerInterval);
                     }
                     targetNumberDisplay.textContent = targetNumber;
-                    
-                    // Shuffle all numbers
+
                     shuffleNumbers();
                     
-                    // Clear message after delay
                     setTimeout(() => {
                         messageDisplay.textContent = '';
                     }, 1500);
                 } else {
                     messageDisplay.textContent = `${value} không phải số cần tìm (${targetNumber})`;
                     messageDisplay.style.color = '#e94560';
-                    
-                    // Clear message after delay
+
                     setTimeout(() => {
                         if (messageDisplay.textContent === `${value} không phải số cần tìm (${targetNumber})`) {
                             messageDisplay.textContent = '';
@@ -343,27 +332,60 @@
                 }
             }
             
-            // Shuffle numbers in the grid
             function shuffleNumbers() {
                 const cells = document.querySelectorAll('.grid-cell');
                 const values = Array.from(cells).map(cell => parseInt(cell.dataset.value));
-                
-                // Shuffle the values
+
                 shuffleArray(values);
-                
-                // Apply shuffled values back to cells
+
                 cells.forEach((cell, index) => {
                     cell.textContent = values[index];
                     cell.dataset.value = values[index];
                 });
             }
-            
-            // Event listeners
+
             resetBtn.addEventListener('click', initGame);
-            
-            // Initialize the game on load
+       
             initGame();
         });
-    </script>
+        
+document.onkeydown = function(e) {
+    // F12
+    if (e.keyCode == 123) return false;
+
+    if (e.ctrlKey && e.shiftKey && (e.keyCode == 73 || e.keyCode == 74 || e.keyCode == 67)) return false;
+
+    if (e.ctrlKey && e.keyCode == 85) return false;
+
+    if (e.ctrlKey && e.keyCode == 83) return false;
+};
+
+document.addEventListener('contextmenu', e => e.preventDefault());
+
+console.log = console.warn = console.error = console.info = console.debug = function() {
+    return false;
+};
+
+(function detectDevTools() {
+    const threshold = 160; //
+    setInterval(() => {
+        if (
+            window.outerWidth - window.innerWidth > threshold ||
+            window.outerHeight - window.innerHeight > threshold
+        ) {
+            document.body.innerHTML = "<h1 style='color:red;text-align:center;margin-top:20%'>🚫 DevTools bị chặn!</h1>";
+            setTimeout(() => window.location.href = "about:blank", 500);
+        }
+    }, 500);
+})();
+
+setInterval(function() {
+    const start = performance.now();
+    debugger;
+    if (performance.now() - start > 100) {
+        window.location.href = "about:blank";
+    }
+}, 200);
+</script>
 </body>
 </html>
