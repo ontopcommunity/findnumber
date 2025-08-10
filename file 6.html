@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Tìm Số</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            padding: 20px;
+        }
+
+        .game-container {
+            background: #0f3460;
+            border-radius: 20px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5);
+            padding: 30px;
+            width: 100%;
+            max-width: 800px;
+            text-align: center;
+            color: #e6e6e6;
+        }
+
+        h1 {
+            color: #e94560;
+            margin-bottom: 20px;
+            font-size: 2.5rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .game-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 25px;
+            background: #1a1a2e;
+            padding: 15px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .info-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .info-label {
+            font-size: 1rem;
+            margin-bottom: 5px;
+            color: #4cc9f0;
+        }
+
+        .info-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #f72585;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            gap: 8px;
+            margin: 0 auto 25px;
+            max-width: 500px;
+        }
+
+        .grid-cell {
+            aspect-ratio: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #16213e;
+            border-radius: 10px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #e6e6e6;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        button {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 50px;
+            background: #e94560;
+            color: white;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        button:hover {
+            background: #b32740;
+        }
+
+        #reset-btn {
+            background: #4cc9f0;
+        }
+
+        #reset-btn:hover {
+            background: #2a9cc9;
+        }
+
+        .message {
+            font-size: 1.3rem;
+            font-weight: bold;
+            min-height: 30px;
+            margin: 15px 0;
+        }
+
+        .instructions {
+            background: #1a1a2e;
+            padding: 20px;
+            border-radius: 15px;
+            margin-top: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .instructions h2 {
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            color: #f72585;
+        }
+
+        .instructions p {
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+
+        @media (max-width: 600px) {
+            .game-container {
+                padding: 15px;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .grid-container {
+                gap: 4px;
+            }
+            
+            .grid-cell {
+                font-size: 0.9rem;
+            }
+            
+            .controls {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            button {
+                width: 100%;
+                max-width: 250px;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .grid-cell {
+                font-size: 0.7rem;
+            }
+            
+            .game-info {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <h1><i class="fas fa-search"></i> Game Tìm Số</h1>
+        
+        <div class="game-info">
+            <div class="info-item">
+                <div class="info-label">Số Cần Tìm</div>
+                <div id="target-number" class="info-value">1</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Số Đã Tìm</div>
+                <div id="found-count" class="info-value">0</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Số Lượt Click</div>
+                <div id="click-count" class="info-value">0</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Thời Gian</div>
+                <div id="timer" class="info-value">0s</div>
+            </div>
+        </div>
+        
+        <div class="grid-container" id="grid"></div>
+        
+        <div class="controls">
+            <button id="reset-btn"><i class="fas fa-redo"></i> Chơi Lại</button>
+        </div>
+        
+        <div class="message" id="message"></div>
+        
+        <div class="instructions">
+            <h2><i class="fas fa-info-circle"></i> Cách Chơi</h2>
+            <p>Tìm các số theo thứ tự từ 1 đến 100. Khi tìm được một số, vị trí của các số khác sẽ được hoán đổi ngẫu nhiên. Không đánh dấu số đã tìm đúng. Cố lên!</p>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const grid = document.getElementById('grid');
+            const targetNumberDisplay = document.getElementById('target-number');
+            const foundCountDisplay = document.getElementById('found-count');
+            const clickCountDisplay = document.getElementById('click-count');
+            const timerDisplay = document.getElementById('timer');
+            const messageDisplay = document.getElementById('message');
+            const resetBtn = document.getElementById('reset-btn');
+            
+            let numbers = [];
+            let targetNumber = 1;
+            let foundCount = 0;
+            let clickCount = 0;
+            let seconds = 0;
+            let timerInterval = null;
+            
+            // Initialize the game
+            function initGame() {
+                grid.innerHTML = '';
+                numbers = [];
+                targetNumber = 1;
+                foundCount = 0;
+                clickCount = 0;
+                seconds = 0;
+                
+                // Clear existing timer
+                if (timerInterval) {
+                    clearInterval(timerInterval);
+                }
+                
+                // Start timer
+                timerInterval = setInterval(() => {
+                    seconds++;
+                    timerDisplay.textContent = `${seconds}s`;
+                }, 1000);
+                
+                // Create numbers array 1-100
+                for (let i = 1; i <= 100; i++) {
+                    numbers.push(i);
+                }
+                
+                // Shuffle numbers
+                shuffleArray(numbers);
+                
+                // Update displays
+                targetNumberDisplay.textContent = targetNumber;
+                foundCountDisplay.textContent = foundCount;
+                clickCountDisplay.textContent = clickCount;
+                timerDisplay.textContent = `${seconds}s`;
+                messageDisplay.textContent = '';
+                
+                // Create grid cells
+                numbers.forEach((number, index) => {
+                    const cell = document.createElement('div');
+                    cell.className = 'grid-cell';
+                    cell.textContent = number;
+                    cell.dataset.index = index;
+                    cell.dataset.value = number;
+                    
+                    cell.addEventListener('click', () => handleCellClick(cell));
+                    grid.appendChild(cell);
+                });
+            }
+            
+            // Fisher-Yates shuffle algorithm
+            function shuffleArray(array) {
+                for (let i = array.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [array[i], array[j]] = [array[j], array[i]];
+                }
+            }
+            
+            // Handle cell click
+            function handleCellClick(cell) {
+                clickCount++;
+                clickCountDisplay.textContent = clickCount;
+                
+                const value = parseInt(cell.dataset.value);
+                
+                if (value === targetNumber) {
+                    foundCount++;
+                    foundCountDisplay.textContent = foundCount;
+                    
+                    messageDisplay.textContent = `Tìm được số ${targetNumber}! Các số khác đã được hoán đổi.`;
+                    messageDisplay.style.color = '#4cc9f0';
+                    
+                    // Move to next target
+                    targetNumber++;
+                    if (targetNumber > 100) {
+                        targetNumber = 1;
+                        messageDisplay.textContent = 'Chúc mừng! Bạn đã hoàn thành trò chơi.';
+                        clearInterval(timerInterval);
+                    }
+                    targetNumberDisplay.textContent = targetNumber;
+                    
+                    // Shuffle all numbers
+                    shuffleNumbers();
+                    
+                    // Clear message after delay
+                    setTimeout(() => {
+                        messageDisplay.textContent = '';
+                    }, 1500);
+                } else {
+                    messageDisplay.textContent = `${value} không phải số cần tìm (${targetNumber})`;
+                    messageDisplay.style.color = '#e94560';
+                    
+                    // Clear message after delay
+                    setTimeout(() => {
+                        if (messageDisplay.textContent === `${value} không phải số cần tìm (${targetNumber})`) {
+                            messageDisplay.textContent = '';
+                        }
+                    }, 1000);
+                }
+            }
+            
+            // Shuffle numbers in the grid
+            function shuffleNumbers() {
+                const cells = document.querySelectorAll('.grid-cell');
+                const values = Array.from(cells).map(cell => parseInt(cell.dataset.value));
+                
+                // Shuffle the values
+                shuffleArray(values);
+                
+                // Apply shuffled values back to cells
+                cells.forEach((cell, index) => {
+                    cell.textContent = values[index];
+                    cell.dataset.value = values[index];
+                });
+            }
+            
+            // Event listeners
+            resetBtn.addEventListener('click', initGame);
+            
+            // Initialize the game on load
+            initGame();
+        });
+    </script>
+</body>
+</html>
